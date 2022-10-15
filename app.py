@@ -16,5 +16,5 @@ app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-
 
 api = Api(app)
 
-api.register_blueprint(ItemBlueprint)
 api.register_blueprint(StoreBlueprint)
+api.register_blueprint(ItemBlueprint)
