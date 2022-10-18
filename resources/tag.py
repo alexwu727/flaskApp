@@ -55,6 +55,9 @@ class LinkItemToTag(MethodView):
     def post(self, item_id, tag_id):
         item = ItemModel.query.get_or_404(item_id)
         tag = TagModel.query.get_or_404(tag_id)
+        if item.store.id != tag.store.id:
+            abort(
+                400, message="Make sure item and tag belong to the same store before linking.")
         item.tags.append(tag)
         try:
             db.session.add(item)
@@ -67,6 +70,9 @@ class LinkItemToTag(MethodView):
     def delete(self, item_id, tag_id):
         item = ItemModel.query.get_or_404(item_id)
         tag = TagModel.query.get_or_404(tag_id)
+        if item.store.id != tag.store.id:
+            abort(
+                400, message="Make sure item and tag belong to the same store before linking.")
         item.tags.remove(tag)
         try:
             db.session.add(item)
