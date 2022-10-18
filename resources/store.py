@@ -22,8 +22,8 @@ class Store(MethodView):
         db.session.commit()
         return store
 
-    @blp.response(200, StoreSchema)
     @blp.arguments(StoreUpdateSchema)
+    @blp.response(200, StoreSchema)
     def put(self, store_data, store_id):
         store = StoreModel.query.get_or_404(store_id)
         if store:
@@ -42,8 +42,8 @@ class Stores(MethodView):
     def get(self):
         return StoreModel.query.all()
 
-    @blp.response(201, StoreSchema)
     @blp.arguments(StoreSchema)
+    @blp.response(201, StoreSchema)
     def post(self, store_data):
         store = StoreModel(**store_data)
         try:
