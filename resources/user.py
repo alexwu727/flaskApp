@@ -7,7 +7,7 @@ from blocklist import BLOCKLIST
 from db import db
 from models import UserModel
 from schemas import UserSchema
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt, get_jwt_identity
 
 blp = Blueprint("users", __name__, description="Operations on users")
 
@@ -40,8 +40,9 @@ class UserLogin(MethodView):
         ).first()
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
-            access_token = create_access_token(identity=user.id)
-            return {"access_token": access_token}
+            access_token = create_access_token(identity=user.id, fresh=True)
+            refresh_token = create_refresh_token(identity=user.id)
+            return {"access_token": access_token, "refresh_token": refresh_token}
         abort(401, message="Invalid credentials.")
 
 
@@ -52,6 +53,17 @@ class UserLogout(MethodView):
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
         return {"message": "Logged out successfully."}
+
+
+@blp.route("/refresh")
+class TokenRefresh(MethodView):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        access_token = create_refresh_token(identity=current_user, fresh=False)
+        jti = get_jwt()["jti"]
+        BLOCKLIST.add(jti)
+        return {"access_token": access_token}
 
 
 @blp.route("/user/<int:user_id>")
