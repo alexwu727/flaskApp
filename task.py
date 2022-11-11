@@ -30,7 +30,7 @@ def send_user_registeration_email(email, username):
         email,
         "Successfully signed up!",
         f"Hello {username}! You have successfully signed up to the Stores REST API.",
-        render_template("email/action.html")
+        render_template("email/action.html", username=username)
     )
 
     return
